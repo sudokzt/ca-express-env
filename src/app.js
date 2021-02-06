@@ -17,15 +17,24 @@ app.use(
     proxy: true,
   }),
 );
+
 app.use(bodyParser.json());
 app.use(bodyParser.raw({ limit: '10mb' }));
 
 app.use((_req, res, next) => {
   res.header({
     Connection: 'close',
-    'Cache-Control': 'max-age=0, no-transform',
+    'Cache-Control': 'public, max-age=31536000, no-cache',
   });
   return next();
+});
+
+app.get('/aaa', (req, res) => {
+  console.log('LLLLLLLLLLL');
+  const path = `/api/blogs`;
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
 });
 
 app.use('/api/v1', apiRouter);
